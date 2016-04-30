@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style media="all">
+  table {
+    float: left;
+    border-collapse: collapse;
+  }
+
+  td {
+    border: 1px solid black;
+    width: 28px;
+    height: 28px;
+  }
+
+  td.black {
+    background: black;
+  }
+
+  td.open {
+    background: white;
+  }
+
+  td.open span.num {
+    vertical-align: super;
+    font-size: 40%;
+    display: inline-block;
+    width: 100%;
+  }
+
+  td.open span.square {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+  }
+
+  td:focus {
+    outline: 3px solid #cadbee;
+    border: 1px solid blue;
+  }
+</style>
+
+<script>
+  var go = function () {
+    var script = document.createElement('script');
+    script.setAttribute('src', '../output/cryptopia.js');
+    document.head.appendChild(script);
+  };
+</script>
+</head>
+
+<body onload="go();">
+
+</body>
+
+</html>
