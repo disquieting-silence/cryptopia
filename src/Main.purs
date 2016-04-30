@@ -12,4 +12,4 @@ cat x = x + 1
 main :: forall e. Eff (console :: CONSOLE, dom :: DOM | e) Unit
 main = do
   log "Hello sailor!"
-  doEverything
+  doEverything ({ getName: "dog" })

@@ -5,4 +5,6 @@ import Prelude
 
 foreign import data DOM :: !
 
-foreign import doEverything :: forall eff. Eff (dom :: DOM | eff) Unit
+type CryptopiaApi = { getName :: String }
+
+foreign import doEverything :: forall eff. CryptopiaApi -> Eff (dom :: DOM | eff) Unit
