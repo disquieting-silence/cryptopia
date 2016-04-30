@@ -71,16 +71,7 @@ exports.doEverything = function (api) {
         var column = Array.prototype.indexOf.call(event.target.parentNode.childNodes, event.target);
         var row = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
 
-        // var delta = (function () {
-        //   if (event.which === 37) return { x: -1, y: 0 };
-        //   else if (event.which === 39) return { x: +1, y: 0 };
-        //   else if (event.which === 38) return { x: 0, y: -1 };
-        //   else if (event.which === 40) return { x: 0, y: +1 };
-        //   else return { x: 0, y: 0 };
-        // })();
-        console.log('api');
         var nextPosition = api.getNextPosition({ x: column, y: row })(event)({ width: NUM_COLS, height: NUM_ROWS });
-console.log('nextPosition', nextPosition);
         table.querySelectorAll('tr')[nextPosition.y].querySelectorAll('td')[nextPosition.x].focus();
 
         console.log('event', row, column);
