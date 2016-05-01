@@ -7,6 +7,8 @@ import Data.Maybe
 import Data.Array
 import Data.Foldable
 
+import Browser.Common
+import Browser.Storage
 import Alien
 
 format :: Array (Array String) -> String
