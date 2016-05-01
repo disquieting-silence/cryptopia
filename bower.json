@@ -12,6 +12,8 @@
   ],
   "dependencies": {
     "purescript-console": "^0.1.0",
-    "purescript-maybe": "*"
+    "purescript-maybe": "*",
+    "purescript-arrays": "*",
+    "purescript-foldable": "*"
   }
 }

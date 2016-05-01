@@ -4,14 +4,25 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Maybe
+import Data.Array
+import Data.Foldable
 
 import Alien
 
+format :: Array (Array String) -> String
+format info = Data.Foldable.intercalate "," (map (\r -> Data.Foldable.intercalate "," r) info)
+--map (Data.Foldable.intercalate ",") info
 
-main :: forall e. Eff (console :: CONSOLE, dom :: DOM | e) Unit
+main :: forall e. Eff (console :: CONSOLE, dom :: DOM, b :: BrowserStorage | e) Unit
 main = do
-  log "Hello sailor!"
   doEverything ({ getNextPosition: getNextPosition })
+  putInStorage "dog" [[ "a" ]]
+  info <- getFromStorage "dog"
+  let strings = maybe "" format info
+  -- let strings = Prelude.map (\row -> (Data.Foldable.intercalate row ",")) info
+  -- let output = Data.Foldable.intercalate "," strings
+  -- log output
+  log strings
 
 getDelta :: KeyEvent -> Maybe Point
 getDelta evt =
