@@ -5,7 +5,7 @@ import Browser.Common
 import Prelude (void, map, show)
 import Data.Maybe
 
-data CrosswordUi = CrosswordUi (Array (Array NodeModel))
+data CrosswordUi = CrosswordUi NodeModel
 
 data NodeModel = NodeModel {
   tag :: NodeTag,
@@ -83,7 +83,19 @@ renderCrosswordSquare Void = renderVoid
 renderCrosswordSquare (Empty detail) = renderEmpty detail.num
 renderCrosswordSquare (Full detail) = renderFull detail.content detail.num
 
+renderCrosswordRow :: Array CrosswordSquare -> NodeModel
+renderCrosswordRow xs =
+  let squares = map renderCrosswordSquare xs
+  in NodeModel {
+    tag: "tr",
+    attributes: [ ],
+    content: "",
+    children: squares
+  }
+
 renderCrossword :: Crossword -> CrosswordUi
-renderCrossword (Crossword rows) =
-  let ui = map (map renderCrosswordSquare) rows
-  in CrosswordUi ui
+renderCrossword (Crossword rowsData) =
+  let rows = map renderCrosswordRow rowsData
+      tbody = NodeModel { tag: "tbody", attributes: [ ], content: "", children: rows }
+      table = NodeModel { tag: "table", attributes: [ ], content: "", children: [ tbody ] }
+  in CrosswordUi table
