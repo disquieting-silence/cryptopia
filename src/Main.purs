@@ -13,17 +13,19 @@ import Core.Crossword
 import Core.Ui
 import Alien
 
+type UpdateGameState = { model :: Crossword, node :: Node }
+
 loadFromRawFormat :: RawFormat -> CrosswordUi
 loadFromRawFormat input =
   let model = Core.Crossword.parse input
   in Core.Ui.renderCrossword model
 
-apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe { model :: Crossword, node :: Node })
+apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiLoadFrom raw =
   let info = loadFromRawFormat raw
   in (\i -> Just { model: Core.Crossword.parse raw, node: i}) <$> (renderNode info)
 
-apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe { model :: Crossword, node :: Node })
+apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiFailedLoad name = do
   return Nothing
 
@@ -37,8 +39,11 @@ apiSave name cword = do
   let toSave = Core.Crossword.serialise cword
   putInStorage name toSave
 
-apiUpdate :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node
-apiUpdate _ _ = createElement "span" [ ] ""
+apiUpdate :: forall eff. Node -> Crossword -> Maybe String -> Eff (dom :: DOM | eff) UpdateGameState
+apiUpdate node cword _ = do
+  _ <- createElement "span" [] ""
+  let same = { node: node, model: cword }
+  return same
 
 
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node

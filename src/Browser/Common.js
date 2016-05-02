@@ -20,7 +20,18 @@ exports.createElement = function (tag) {
 exports.appendElement = function (parent) {
   return function (child) {
     return function () {
+      console.log('appending', child);
       parent.appendChild(child);
+    };
+  };
+};
+
+
+// Probably should deal with maybes
+exports.readAttribute = function (node) {
+  return function (attr) {
+    return function () {
+      return node.getAttribute(attr);
     };
   };
 };

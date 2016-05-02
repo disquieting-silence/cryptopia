@@ -30,19 +30,21 @@ exports.doEverything = function (api) {
     var table = api.renderGrid(gameState)();
     container.appendChild(table);
 
-    document.querySelector('.crossword').addEventListener('keypress', function (event) {
+    container.addEventListener('keypress', function (event) {
       var ch = event.which;
       console.log('ch', ch, event.target, event);
       if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
         if (ch === 32) event.target.setAttribute('class', 'black');
         else {
-          event.target.setAttribute('class', 'open');
-          event.target.querySelector('.square').innerHTML = String.fromCharCode(ch).toUpperCase();
+          api.updateGrid(gameState, event.target, String.fromCharCode(ch).toUpperCase());
+          // event.target.setAttribute('class', 'open');
+          //
+          // event.target.querySelector('.square').innerHTML = String.fromCharCode(ch).toUpperCase();
         }
       }
     });
 
-    document.querySelector('.crossword').addEventListener('keydown', function (event) {
+    container.addEventListener('keydown', function (event) {
       if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
         // current index in row
         var column = Array.prototype.indexOf.call(event.target.parentNode.childNodes, event.target);
@@ -66,7 +68,7 @@ exports.doEverything = function (api) {
       var file = prompt('Restore');
       if (file !== null && file !== undefined) {
         var table = api.load(file)();
-        
+
         // Breaking abstraction
         if (table.value0) {
           document.querySelector('.crossword').innerHTML = '';

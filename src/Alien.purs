@@ -15,7 +15,7 @@ type CryptopiaApi = {
   getNextPosition :: Point -> KeyEvent -> Bounds -> Point,
   load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe { model :: Crossword, node :: Node }),
   save :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit,
-  update :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node,
+  update :: forall eff. Node -> Crossword -> Maybe String -> Eff (dom :: DOM | eff) { model :: Crossword, node :: Node },
   createGrid :: Bounds -> Crossword,
   renderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 }

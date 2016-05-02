@@ -2,8 +2,9 @@ module Core.Ui where
 
 import Core.Crossword
 import Browser.Common
-import Prelude (void, map, show)
+import Data.Array
 import Data.Maybe
+import Prelude (void, map, show)
 
 data CrosswordUi = CrosswordUi NodeModel
 
@@ -66,6 +67,7 @@ renderFull c numOpt = NodeModel {
   ],
   content: "",
   children: [
+    NodeModel { tag: "span", attributes: [], content: "hi", children: [] },
     (renderNumber numOpt),
     renderContent c
   ]
@@ -78,9 +80,20 @@ renderCrosswordSquare Black = renderVoid
 renderCrosswordSquare (Empty detail) = renderEmpty detail.num
 renderCrosswordSquare (Full detail) = renderFull detail.content detail.num
 
+addAttrToModel :: NodeModel -> (Array Attribute) -> NodeModel
+addAttrToModel (NodeModel base) attrs =
+  NodeModel (base { attributes = (Data.Array.concat [base.attributes, attrs]) })
+
+renderCrosswordSquareAndIndex :: { info :: CrosswordSquare, index :: Int } -> NodeModel
+renderCrosswordSquareAndIndex c =
+  let base = renderCrosswordSquare c.info
+  in addAttrToModel base [{ key: "data-col-index", value: show c.index }]
+
+
 renderCrosswordRow :: Array CrosswordSquare -> NodeModel
 renderCrosswordRow xs =
-  let squares = map renderCrosswordSquare xs
+  let zipped = Data.Array.zipWith (\a b -> { index: a, info: b }) (Data.Array.range 0 (Data.Array.length xs)) xs
+      squares = map renderCrosswordSquareAndIndex zipped
   in NodeModel {
     tag: "tr",
     attributes: [ ],
