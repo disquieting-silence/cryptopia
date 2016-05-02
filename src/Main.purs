@@ -9,22 +9,51 @@ import Data.Foldable
 
 import Browser.Common
 import Browser.Storage
+import Core.Crossword
+import Core.Ui
 import Alien
 
-format :: Array (Array String) -> String
-format info = Data.Foldable.intercalate "," (map (\r -> Data.Foldable.intercalate "," r) info)
---map (Data.Foldable.intercalate ",") info
+loadFromRawFormat :: RawFormat -> CrosswordUi
+loadFromRawFormat input =
+  let model = Core.Crossword.parse input
+  in Core.Ui.renderCrossword model
 
-main :: forall e. Eff (console :: CONSOLE, dom :: DOM, b :: BrowserStorage | e) Unit
+apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe Node)
+apiLoadFrom raw =
+  let info = loadFromRawFormat raw
+  in Just <$> (renderNode info)
+
+apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe Node)
+apiFailedLoad name = do
+  return Nothing
+
+apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe Node)
+apiLoad name = do
+  input <- getFromStorage name
+  maybe (apiFailedLoad name) apiLoadFrom input.detail
+
+apiSave :: forall eff. String -> Eff (browser :: BrowserStorage | eff) Unit
+apiSave name = putInStorage name []
+
+apiUpdate :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node
+apiUpdate _ _ = createElement "span" [ ] ""
+
+renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
+renderNode _ = createElement "span" [ ] ""
+
+bridgeApi :: CryptopiaApi
+bridgeApi = {
+  getNextPosition: getNextPosition,
+  load: apiLoad,
+  save: apiSave,
+  update: apiUpdate
+}
+
+main :: forall e. Eff (console :: CONSOLE, dom :: DOM, browser :: BrowserStorage | e) Unit
 main = do
-  doEverything ({ getNextPosition: getNextPosition })
+  doEverything (bridgeApi)
   putInStorage "dog" [[ "a" ]]
-  info <- getFromStorage "dog"
-  let strings = maybe "" format info
-  -- let strings = Prelude.map (\row -> (Data.Foldable.intercalate row ",")) info
-  -- let output = Data.Foldable.intercalate "," strings
-  -- log output
-  log strings
+  log "HI"
 
 getDelta :: KeyEvent -> Maybe Point
 getDelta evt =
