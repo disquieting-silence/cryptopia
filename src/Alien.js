@@ -36,10 +36,12 @@ exports.doEverything = function (api) {
       if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
         if (ch === 32) event.target.setAttribute('class', 'black');
         else {
-          api.updateGrid(gameState, event.target, String.fromCharCode(ch).toUpperCase());
-          // event.target.setAttribute('class', 'open');
-          //
-          // event.target.querySelector('.square').innerHTML = String.fromCharCode(ch).toUpperCase();
+          var action = String.fromCharCode(ch).toUpperCase();
+          console.log('action', action);
+          var result = api.update(event.target)(gameState)(event.target)(new PS['Data.Maybe'].Just(action))();
+          gameState = result.model;
+          container.innerHTML = '';
+          container.appendChild(result.node);
         }
       }
     });
