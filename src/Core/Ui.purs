@@ -74,7 +74,7 @@ renderFull c numOpt = NodeModel {
 
 -- <td tabindex="-1" class="open"><span class="num">10</span><span class="square">D</span></td>
 renderCrosswordSquare :: CrosswordSquare -> NodeModel
-renderCrosswordSquare Void = renderVoid
+renderCrosswordSquare Black = renderVoid
 renderCrosswordSquare (Empty detail) = renderEmpty detail.num
 renderCrosswordSquare (Full detail) = renderFull detail.content detail.num
 

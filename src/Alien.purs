@@ -13,8 +13,8 @@ type Bounds = { width :: Int, height :: Int }
 
 type CryptopiaApi = {
   getNextPosition :: Point -> KeyEvent -> Bounds -> Point,
-  load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe Node),
-  save :: forall eff. String -> Eff (browser :: BrowserStorage | eff) Unit,
+  load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe { model :: Crossword, node :: Node }),
+  save :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit,
   update :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node,
   createGrid :: Bounds -> Crossword,
   renderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node

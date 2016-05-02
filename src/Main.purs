@@ -18,22 +18,24 @@ loadFromRawFormat input =
   let model = Core.Crossword.parse input
   in Core.Ui.renderCrossword model
 
-apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe Node)
+apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe { model :: Crossword, node :: Node })
 apiLoadFrom raw =
   let info = loadFromRawFormat raw
-  in Just <$> (renderNode info)
+  in (\i -> Just { model: Core.Crossword.parse raw, node: i}) <$> (renderNode info)
 
-apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe Node)
+apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe { model :: Crossword, node :: Node })
 apiFailedLoad name = do
   return Nothing
 
-apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe Node)
+apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe { model:: Crossword, node:: Node })
 apiLoad name = do
   input <- getFromStorage name
   maybe (apiFailedLoad name) apiLoadFrom input.detail
 
-apiSave :: forall eff. String -> Eff (browser :: BrowserStorage | eff) Unit
-apiSave name = putInStorage name []
+apiSave :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit
+apiSave name cword = do
+  let toSave = Core.Crossword.serialise cword
+  putInStorage name toSave
 
 apiUpdate :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node
 apiUpdate _ _ = createElement "span" [ ] ""

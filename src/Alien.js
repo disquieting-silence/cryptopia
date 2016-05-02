@@ -15,8 +15,6 @@ exports.doEverything = function (api) {
     var NUM_COLS = 15;
 
     var container = document.querySelector('.crossword');
-    var table = document.createElement('table');
-    var tbody = document.createElement('tbody');
 
     var save = document.createElement('button');
     save.innerHTML = "Save";
@@ -28,12 +26,10 @@ exports.doEverything = function (api) {
     restore.classList.add('restore');
     document.body.appendChild(restore);
 
-    var grid = api.createGrid({ width: 5, height: 5 });
-    var table = api.renderGrid(grid)();
+    var gameState = api.createGrid({ width: 5, height: 5 });
+    var table = api.renderGrid(gameState)();
     container.appendChild(table);
 
-
-    // Keypress listeners for adding characters
     document.querySelector('.crossword').addEventListener('keypress', function (event) {
       var ch = event.which;
       console.log('ch', ch, event.target, event);
@@ -59,27 +55,10 @@ exports.doEverything = function (api) {
       }
     });
 
-
-    var serialize = function () {
-      var data = Array.prototype.map.call(document.querySelector('.crossword').querySelectorAll('tr'), function (row) {
-        return Array.prototype.map.call(row.querySelectorAll('td'), function (cell) {
-          if (cell.classList.contains('black')) return '*';
-          else return cell.querySelector('.square').innerHTML;
-        });
-
-      });
-
-      console.log('data', data);
-      return data;
-    };
-
-    window.serialize = serialize;
-
     document.querySelector('.save').addEventListener('click', function () {
-      var data = serialize();
       var file = prompt('Save as');
       if (file !== null && file !== undefined && file.length > 0) {
-        localStorage.setItem('sword.' + file, JSON.stringify(data));
+        api.save(file)(gameState)();
       }
     });
 
@@ -93,7 +72,8 @@ exports.doEverything = function (api) {
         // Breaking abstraction
         if (table.value0) {
           document.querySelector('.crossword').innerHTML = '';
-          document.querySelector('.crossword').appendChild(table.value0);
+          document.querySelector('.crossword').appendChild(table.value0.node);
+          gameState = table.value0.model;
         }
       }
     });
