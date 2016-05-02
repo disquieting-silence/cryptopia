@@ -5,16 +5,21 @@
 exports.putInStorage = function (name) {
   return function (data) {
     return function () {
-      localStorage.setItem('cryptopia.' + name, JSON.stringify(data));
+      localStorage.setItem('sword.' + name, JSON.stringify(data));
     }
   };
 }
 
 exports.getFromStorage = function (name) {
   return function () {
-    var item = localStorage.getItem('cryptopia.' + name);
-    // Note, they say to just pass in arguments.
-    if (item === undefined || item === null) return PS['Data.Maybe'].Nothing.create();
-    else return PS['Data.Maybe'].Just.create(JSON.parse(item));
+    var parsed = (function () {
+      var item = localStorage.getItem('sword.' + name);
+      // Note, they say to just pass in arguments.
+      if (item === undefined || item === null) return new PS['Data.Maybe'].Nothing();
+      else return new PS['Data.Maybe'].Just(JSON.parse(item));
+    })();
+    return {
+      detail: parsed
+    };
   };
 };

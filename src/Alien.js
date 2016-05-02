@@ -123,8 +123,10 @@ exports.doEverything = function (api) {
     document.querySelector('.restore').addEventListener('click', function () {
       var file = prompt('Restore');
       if (file !== null && file !== undefined) {
-        var item = localStorage.getItem('sword.' + file);
-        if (item !== null) deserialize(JSON.parse(item));
+        var table = api.load(file)();
+        // var item = localStorage.getItem('sword.' + file);
+        // if (item !== null) deserialize(JSON.parse(item));
+        console.log('table', table);
       }
     });
   };
