@@ -39,26 +39,12 @@ createGrid :: Int -> Int -> Crossword
 createGrid w h =
   Crossword $ Data.Array.replicate h (createRow w)
 
-findCell :: Crossword -> Int -> Int -> Maybe CrosswordSquare
-findCell (Crossword model) r c = do
-  row <- model !! r
-  cell <- row !! c
-  return cell
-
-setCellContent :: String -> CrosswordSquare -> CrosswordSquare
-setCellContent "" _ = Empty { num: Nothing }
-setCellContent c sq = Full { num: Nothing, content: c }
-
-updateCell :: Maybe String -> CrosswordSquare -> CrosswordSquare
-updateCell (Nothing) sq = sq
-updateCell (Just s) sq = setCellContent s sq
-
-updateRow :: Int -> Maybe String -> Array CrosswordSquare -> Array CrosswordSquare
-updateRow c s row =
-  let updatedRow = Data.Array.modifyAt c (updateCell s) row
+updateRow :: Int -> (CrosswordSquare -> CrosswordSquare)-> Array CrosswordSquare -> Array CrosswordSquare
+updateRow c modifier row =
+  let updatedRow = Data.Array.modifyAt c modifier row
   in maybe row id updatedRow
 
-updateGrid :: Crossword -> Int -> Int -> Maybe String -> Crossword
-updateGrid (Crossword model) r c s =
-  let updatedModel = Data.Array.modifyAt r (updateRow c s) model
+updateGrid :: Crossword -> Int -> Int -> (CrosswordSquare -> CrosswordSquare) -> Crossword
+updateGrid (Crossword model) r c modifier =
+  let updatedModel = Data.Array.modifyAt r (updateRow c modifier) model
   in Crossword $ maybe model id updatedModel

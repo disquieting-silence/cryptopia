@@ -15,8 +15,6 @@ import Core.Crossword
 import Core.Ui
 import Alien
 
-type UpdateGameState = { model :: Crossword, node :: Node }
-
 loadFromRawFormat :: RawFormat -> CrosswordUi
 loadFromRawFormat input =
   let model = Core.Crossword.parse input
@@ -47,14 +45,29 @@ readIndices rowIndex colIndex = do
   ci <- fromString colIndex
   return { colIndex: ci, rowIndex: ri }
 
-apiUpdate :: forall eff. Node -> Crossword -> Maybe String -> Eff (dom :: DOM | eff) UpdateGameState
-apiUpdate node cword value = do
+apiUpdate :: forall eff. Node -> Crossword -> (CrosswordSquare -> CrosswordSquare) -> Eff (dom :: DOM | eff) UpdateGameState
+apiUpdate node cword modifier = do
   rowIndex <- (readAttribute node "data-row-index")
   colIndex <- (readAttribute node "data-col-index")
   let indices = readIndices rowIndex colIndex
-  let updated = Data.Maybe.maybe cword (\i -> updateGrid cword i.rowIndex i.colIndex value) indices
+  let updated = Data.Maybe.maybe cword (\i -> updateGrid cword i.rowIndex i.colIndex modifier) indices
   rendered <- apiRenderGrid updated
   return { model: updated, node: rendered }
+
+
+noop :: CrosswordSquare -> CrosswordSquare
+noop sq = sq
+
+extractKeyPress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
+extractKeyPress evt = do
+  let which = evt.which
+  name <- getNodeName evt.target
+  return { target: evt.target, modifier: noop }
+
+processKeyPress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
+processKeyPress evt cword = do
+  extracted <- extractKeyPress evt
+  apiUpdate extracted.target cword extracted.modifier
 
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
 renderNode (CrosswordUi model) = createElementsFrom model
@@ -72,7 +85,7 @@ bridgeApi = {
   getNextPosition: getNextPosition,
   load: apiLoad,
   save: apiSave,
-  update: apiUpdate,
+  processKeypress: processKeyPress,
   createGrid: apiCreateGrid,
   renderGrid: apiRenderGrid
 }

@@ -35,3 +35,9 @@ exports.readAttribute = function (node) {
     };
   };
 };
+
+exports.getNodeName = function (node) {
+  return function () {
+    return node.nodeName;
+  };
+};

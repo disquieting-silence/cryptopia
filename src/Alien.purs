@@ -8,14 +8,16 @@ import Prelude
 import Data.Maybe
 
 type Point = { x :: Int, y :: Int }
-type KeyEvent = { which :: Int }
+type KeyEvent = { which :: Int, target :: Node }
 type Bounds = { width :: Int, height :: Int }
+
+type UpdateGameState = { model :: Crossword, node :: Node }
 
 type CryptopiaApi = {
   getNextPosition :: Point -> KeyEvent -> Bounds -> Point,
-  load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe { model :: Crossword, node :: Node }),
+  load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState),
   save :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit,
-  update :: forall eff. Node -> Crossword -> Maybe String -> Eff (dom :: DOM | eff) { model :: Crossword, node :: Node },
+  processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState,
   createGrid :: Bounds -> Crossword,
   renderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 }

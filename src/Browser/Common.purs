@@ -27,6 +27,8 @@ foreign import appendElement :: forall eff. Node -> Node -> Eff (dom :: DOM | ef
 
 foreign import readAttribute :: forall eff. Node -> String -> Eff (dom :: DOM | eff) String
 
+foreign import getNodeName :: forall eff. Node -> Eff (dom :: DOM | eff) String
+
 createAndAppend :: forall eff. Node -> NodeModel -> Eff (dom :: DOM | eff) Unit
 createAndAppend parent childModel = do
   c <- createElementsFrom childModel
