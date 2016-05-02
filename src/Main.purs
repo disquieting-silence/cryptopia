@@ -6,6 +6,8 @@ import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Maybe
 import Data.Array
 import Data.Foldable
+import Math
+import Data.Int
 
 import Browser.Common
 import Browser.Storage
@@ -39,12 +41,20 @@ apiSave name cword = do
   let toSave = Core.Crossword.serialise cword
   putInStorage name toSave
 
-apiUpdate :: forall eff. Node -> Crossword -> Maybe String -> Eff (dom :: DOM | eff) UpdateGameState
-apiUpdate node cword _ = do
-  _ <- createElement "span" [] ""
-  let same = { node: node, model: cword }
-  return same
+readIndices :: String -> String -> Maybe { colIndex:: Int, rowIndex:: Int }
+readIndices rowIndex colIndex = do
+  ri <- fromString rowIndex
+  ci <- fromString colIndex
+  return { colIndex: ci, rowIndex: ri }
 
+apiUpdate :: forall eff. Node -> Crossword -> Maybe String -> Eff (dom :: DOM | eff) UpdateGameState
+apiUpdate node cword value = do
+  rowIndex <- (readAttribute node "data-row-index")
+  colIndex <- (readAttribute node "data-col-index")
+  let indices = readIndices rowIndex colIndex
+  let updated = Data.Maybe.maybe cword (\i -> updateGrid cword i.rowIndex i.colIndex value) indices
+  rendered <- apiRenderGrid updated
+  return { model: updated, node: rendered }
 
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
 renderNode (CrosswordUi model) = createElementsFrom model
