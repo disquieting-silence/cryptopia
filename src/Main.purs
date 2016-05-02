@@ -42,12 +42,22 @@ apiUpdate _ _ = createElement "span" [ ] ""
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
 renderNode (CrosswordUi model) = createElementsFrom model
 
+apiCreateGrid :: Bounds -> Crossword
+apiCreateGrid bounds = Core.Crossword.createGrid bounds.width bounds.height
+
+apiRenderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
+apiRenderGrid cword =
+  let ui = Core.Ui.renderCrossword cword
+  in renderNode ui
+
 bridgeApi :: CryptopiaApi
 bridgeApi = {
   getNextPosition: getNextPosition,
   load: apiLoad,
   save: apiSave,
-  update: apiUpdate
+  update: apiUpdate,
+  createGrid: apiCreateGrid,
+  renderGrid: apiRenderGrid
 }
 
 main :: forall e. Eff (console :: CONSOLE, dom :: DOM, browser :: BrowserStorage | e) Unit

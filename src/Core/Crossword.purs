@@ -1,7 +1,7 @@
 module Core.Crossword where
 
 import Data.Maybe
-import Prelude(map)
+import Prelude
 
 data CrosswordSquare =
   Void |
@@ -22,3 +22,11 @@ parse :: Array (Array String) -> Crossword
 parse rows =
   let parsed = map parseRow rows
   in Crossword parsed
+
+
+createRow :: Int -> Array CrosswordSquare
+createRow cols = (Data.Array.replicate cols Void)
+
+createGrid :: Int -> Int -> Crossword
+createGrid w h =
+  Crossword $ Data.Array.replicate h (createRow w)

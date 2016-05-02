@@ -3,6 +3,7 @@ module Alien where
 import Browser.Common
 import Browser.Storage
 import Control.Monad.Eff (Eff)
+import Core.Crossword
 import Prelude
 import Data.Maybe
 
@@ -14,7 +15,9 @@ type CryptopiaApi = {
   getNextPosition :: Point -> KeyEvent -> Bounds -> Point,
   load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe Node),
   save :: forall eff. String -> Eff (browser :: BrowserStorage | eff) Unit,
-  update :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node
+  update :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node,
+  createGrid :: Bounds -> Crossword,
+  renderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 }
 
 foreign import doEverything :: forall eff. CryptopiaApi -> Eff (dom :: DOM | eff) Unit

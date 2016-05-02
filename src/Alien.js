@@ -28,28 +28,8 @@ exports.doEverything = function (api) {
     restore.classList.add('restore');
     document.body.appendChild(restore);
 
-    for (var r = 0; r < NUM_ROWS; r++) {
-      var tr = document.createElement('tr');
-      tbody.appendChild(tr);
-      for (var c = 0; c < NUM_COLS; c++) {
-        var td = document.createElement('td');
-        var clazz = 'black';
-        td.setAttribute('tabindex', '-1');
-        td.classList.add(clazz);
-        var num = document.createElement('span');
-        num.classList.add('num');
-  	    td.appendChild(num);
-        num.innerHTML = '10';
-
-  	    var square = document.createElement('span');
-  	    square.classList.add('square');
-  	    td.appendChild(square);
-        square.innerHTML = 'C';
-        tr.appendChild(td);
-      }
-    }
-
-    table.appendChild(tbody);
+    var grid = api.createGrid({ width: 5, height: 5 });
+    var table = api.renderGrid(grid)();
     container.appendChild(table);
 
 
@@ -93,24 +73,7 @@ exports.doEverything = function (api) {
       return data;
     };
 
-    var deserialize = function (data) {
-      console.log('deserializing ... ', data);
-      var cells = document.querySelector('.crossword').querySelectorAll('td');
-      for (var r = 0; r < data.length; r++) {
-        for (var c = 0; c < data[r].length; c++) {
-          var index = r * NUM_COLS + c;
-          var val = data[r][c];
-          if (val === '*') cells[index].setAttribute('class', 'black');
-          else {
-            cells[index].setAttribute('class', 'open');
-            cells[index].querySelector('.square').innerHTML = val;
-          }
-        }
-      }
-    };
-
     window.serialize = serialize;
-    window.deserialize = deserialize;
 
     document.querySelector('.save').addEventListener('click', function () {
       var data = serialize();
