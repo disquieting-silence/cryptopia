@@ -66,9 +66,7 @@ exports.doEverything = function (api) {
       var file = prompt('Restore');
       if (file !== null && file !== undefined) {
         var table = api.load(file)();
-        // var item = localStorage.getItem('sword.' + file);
-        // if (item !== null) deserialize(JSON.parse(item));
-
+        
         // Breaking abstraction
         if (table.value0) {
           document.querySelector('.crossword').innerHTML = '';
