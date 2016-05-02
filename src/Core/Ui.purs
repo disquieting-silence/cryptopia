@@ -84,16 +84,16 @@ addAttrToModel :: NodeModel -> (Array Attribute) -> NodeModel
 addAttrToModel (NodeModel base) attrs =
   NodeModel (base { attributes = (Data.Array.concat [base.attributes, attrs]) })
 
-renderCrosswordSquareAndIndex :: { info :: CrosswordSquare, index :: Int } -> NodeModel
-renderCrosswordSquareAndIndex c =
+renderCrosswordSquareWithIndex :: { info :: CrosswordSquare, colIndex :: Int, rowIndex :: Int } -> NodeModel
+renderCrosswordSquareWithIndex c =
   let base = renderCrosswordSquare c.info
-  in addAttrToModel base [{ key: "data-col-index", value: show c.index }]
+  in addAttrToModel base [{ key: "data-col-index", value: (show c.colIndex) }, { key: "data-row-index", value: show c.rowIndex }]
 
 
-renderCrosswordRow :: Array CrosswordSquare -> NodeModel
-renderCrosswordRow xs =
-  let zipped = Data.Array.zipWith (\a b -> { index: a, info: b }) (Data.Array.range 0 (Data.Array.length xs)) xs
-      squares = map renderCrosswordSquareAndIndex zipped
+renderCrosswordRow :: Int -> Array CrosswordSquare -> NodeModel
+renderCrosswordRow r xs =
+  let zipped = Data.Array.zipWith (\a b -> { rowIndex: r, colIndex: a, info: b }) (Data.Array.range 0 (Data.Array.length xs)) xs
+      squares = map renderCrosswordSquareWithIndex zipped
   in NodeModel {
     tag: "tr",
     attributes: [ ],
@@ -101,9 +101,13 @@ renderCrosswordRow xs =
     children: squares
   }
 
+renderCrosswordRowWithIndex :: { row :: Array CrosswordSquare, rowIndex :: Int } -> NodeModel
+renderCrosswordRowWithIndex i = renderCrosswordRow i.rowIndex i.row
+
 renderCrossword :: Crossword -> CrosswordUi
 renderCrossword (Crossword rowsData) =
-  let rows = map renderCrosswordRow rowsData
+  let zipped = Data.Array.zipWith (\a b -> { row: b, rowIndex: a }) (Data.Array.range 0 (Data.Array.length rowsData)) rowsData
+      rows = map renderCrosswordRowWithIndex zipped
       tbody = NodeModel { tag: "tbody", attributes: [ ], content: "", children: rows }
       table = NodeModel { tag: "table", attributes: [ ], content: "", children: [ tbody ] }
   in CrosswordUi table
