@@ -56,7 +56,7 @@ apiUpdate node cword modifier = do
 
 
 noop :: CrosswordSquare -> CrosswordSquare
-noop sq = sq
+noop sq = Black
 
 extractKeyPress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
 extractKeyPress evt = do

@@ -33,17 +33,26 @@ exports.doEverything = function (api) {
     container.addEventListener('keypress', function (event) {
       var ch = event.which;
       console.log('ch', ch, event.target, event);
-      if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
-        if (ch === 32) event.target.setAttribute('class', 'black');
-        else {
-          var action = String.fromCharCode(ch).toUpperCase();
-          console.log('action', action);
-          var result = api.update(event.target)(gameState)(event.target)(new PS['Data.Maybe'].Just(action))();
-          gameState = result.model;
-          container.innerHTML = '';
-          container.appendChild(result.node);
-        }
+
+      var updated = api.processKeypress(event)(gameState)();
+      if (updated) {
+        gameState = updated.model;
+        container.innerHTML = '';
+        container.appendChild(updated.node);
       }
+
+
+      // if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
+      //   if (ch === 32) event.target.setAttribute('class', 'black');
+      //   else {
+      //     var action = String.fromCharCode(ch).toUpperCase();
+      //     console.log('action', action);
+      //     var result = api.update(event.target)(gameState)(event.target)(new PS['Data.Maybe'].Just(action))();
+      //     gameState = result.model;
+      //     container.innerHTML = '';
+      //     container.appendChild(result.node);
+      //   }
+      // }
     });
 
     container.addEventListener('keydown', function (event) {
