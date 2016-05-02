@@ -11,6 +11,12 @@ exports.doEverything = function (api) {
     crossword.classList.add('crossword');
     document.body.appendChild(crossword);
 
+    var refresh = function (newState) {
+      container.innerHTML = '';
+      gameState = newState.model;
+      container.appendChild(newState.node);
+    };
+
     var NUM_ROWS = 15;
     var NUM_COLS = 15;
 
@@ -35,24 +41,7 @@ exports.doEverything = function (api) {
       console.log('ch', ch, event.target, event);
 
       var updated = api.processKeypress(event)(gameState)();
-      if (updated) {
-        gameState = updated.model;
-        container.innerHTML = '';
-        container.appendChild(updated.node);
-      }
-
-
-      // if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
-      //   if (ch === 32) event.target.setAttribute('class', 'black');
-      //   else {
-      //     var action = String.fromCharCode(ch).toUpperCase();
-      //     console.log('action', action);
-      //     var result = api.update(event.target)(gameState)(event.target)(new PS['Data.Maybe'].Just(action))();
-      //     gameState = result.model;
-      //     container.innerHTML = '';
-      //     container.appendChild(result.node);
-      //   }
-      // }
+      if (updated) refresh(updated);
     });
 
     container.addEventListener('keydown', function (event) {
@@ -81,11 +70,7 @@ exports.doEverything = function (api) {
         var table = api.load(file)();
 
         // Breaking abstraction
-        if (table.value0) {
-          document.querySelector('.crossword').innerHTML = '';
-          document.querySelector('.crossword').appendChild(table.value0.node);
-          gameState = table.value0.model;
-        }
+        if (table.value0) refresh(table.value0);
       }
     });
   };
