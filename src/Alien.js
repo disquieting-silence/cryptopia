@@ -54,7 +54,7 @@ exports.doEverything = function (api) {
 
 
     // Keypress listeners for adding characters
-    table.addEventListener('keypress', function (event) {
+    document.querySelector('.crossword').addEventListener('keypress', function (event) {
       var ch = event.which;
       console.log('ch', ch, event.target, event);
       if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
@@ -66,14 +66,14 @@ exports.doEverything = function (api) {
       }
     });
 
-    table.addEventListener('keydown', function (event) {
+    document.querySelector('.crossword').addEventListener('keydown', function (event) {
       if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
         // current index in row
         var column = Array.prototype.indexOf.call(event.target.parentNode.childNodes, event.target);
         var row = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
 
         var nextPosition = api.getNextPosition({ x: column, y: row })(event)({ width: NUM_COLS, height: NUM_ROWS });
-        table.querySelectorAll('tr')[nextPosition.y].querySelectorAll('td')[nextPosition.x].focus();
+        document.querySelector('.crossword').querySelectorAll('tr')[nextPosition.y].querySelectorAll('td')[nextPosition.x].focus();
 
         console.log('event', row, column);
       }
@@ -81,7 +81,7 @@ exports.doEverything = function (api) {
 
 
     var serialize = function () {
-      var data = Array.prototype.map.call(table.querySelectorAll('tr'), function (row) {
+      var data = Array.prototype.map.call(document.querySelector('.crossword').querySelectorAll('tr'), function (row) {
         return Array.prototype.map.call(row.querySelectorAll('td'), function (cell) {
           if (cell.classList.contains('black')) return '*';
           else return cell.querySelector('.square').innerHTML;
@@ -95,7 +95,7 @@ exports.doEverything = function (api) {
 
     var deserialize = function (data) {
       console.log('deserializing ... ', data);
-      var cells = table.querySelectorAll('td');
+      var cells = document.querySelector('.crossword').querySelectorAll('td');
       for (var r = 0; r < data.length; r++) {
         for (var c = 0; c < data[r].length; c++) {
           var index = r * NUM_COLS + c;
@@ -126,7 +126,12 @@ exports.doEverything = function (api) {
         var table = api.load(file)();
         // var item = localStorage.getItem('sword.' + file);
         // if (item !== null) deserialize(JSON.parse(item));
-        console.log('table', table);
+
+        // Breaking abstraction
+        if (table.value0) {
+          document.querySelector('.crossword').innerHTML = '';
+          document.querySelector('.crossword').appendChild(table.value0);
+        }
       }
     });
   };
