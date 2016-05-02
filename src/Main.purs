@@ -38,8 +38,9 @@ apiSave name = putInStorage name []
 apiUpdate :: forall eff. Point -> Maybe String -> Eff (dom :: DOM | eff) Node
 apiUpdate _ _ = createElement "span" [ ] ""
 
+
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
-renderNode _ = createElement "span" [ ] ""
+renderNode (CrosswordUi model) = createElementsFrom model
 
 bridgeApi :: CryptopiaApi
 bridgeApi = {

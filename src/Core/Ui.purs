@@ -7,12 +7,7 @@ import Data.Maybe
 
 data CrosswordUi = CrosswordUi NodeModel
 
-data NodeModel = NodeModel {
-  tag :: NodeTag,
-  attributes :: Array Attribute,
-  content :: HtmlContent,
-  children :: Array NodeModel
-}
+
 
 focusable :: Attribute
 focusable = { key: "tabindex", value: "-1" }
