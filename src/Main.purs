@@ -91,8 +91,25 @@ processKeypress evt cword = do
   extracted <- extractKeypress evt
   apiUpdate extracted.target cword extracted.modifier
 
-processKeydown :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) (Maybe Node)
-processKeydown _ _ = pure Nothing
+
+-- getNextSquare :: Maybe { rowIndex :: Int, colIndex :: Int } ->
+
+-- processKeydown :: forall eff. Node -> Node -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
+-- processKeydown parent cell evt = do
+--   -- Remove duplication and abstraction breaking.
+--
+--   -- What I want to do here is get the bounds (somehow) and navigate the delta and
+--   -- find that cell in the container, and return it
+--
+--   -- So let's assume I have the bounds.
+--   bounds <- maybe { width : 1, height: 1 } id (getBounds model)
+--   rowIndex <- (readAttribute node "data-row-index")
+--   colIndex <- (readAttribute node "data-col-index")
+--   let indices = readIndices rowIndex colIndex
+--   let nextPosition = getNextPosition
+--   let delta = Data.Maybe.maybe { x: 0, y: 0 }
+
+
 
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
 renderNode (CrosswordUi model) = createElementsFrom model

@@ -48,3 +48,9 @@ updateGrid :: Crossword -> Int -> Int -> (CrosswordSquare -> CrosswordSquare) ->
 updateGrid (Crossword model) r c modifier =
   let updatedModel = Data.Array.modifyAt r (updateRow c modifier) model
   in Crossword $ maybe model id updatedModel
+
+getBounds :: Crossword -> Maybe { width :: Int, height :: Int }
+getBounds (Crossword model) = do
+  numRows <- pure (length model)
+  numColumns <- length <$> (model !! 0)
+  return { width: numColumns, height: numRows }
