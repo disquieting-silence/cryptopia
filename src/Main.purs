@@ -23,13 +23,13 @@ loadFromRawFormat input =
 apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiLoadFrom raw =
   let info = loadFromRawFormat raw
-  in (\i -> Just { model: Core.Crossword.parse raw, node: i}) <$> (renderNode info)
+  in (\i -> Just { model: Core.Crossword.parse raw, node: i, focused: Nothing}) <$> (renderNode info)
 
 apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiFailedLoad name = do
   return Nothing
 
-apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe { model:: Crossword, node:: Node })
+apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
 apiLoad name = do
   input <- getFromStorage name
   maybe (apiFailedLoad name) apiLoadFrom input.detail
@@ -45,6 +45,15 @@ readIndices rowIndex colIndex = do
   ci <- fromString colIndex
   return { colIndex: ci, rowIndex: ri }
 
+
+findAgain :: forall eff. Node -> { colIndex :: Int, rowIndex :: Int } -> Eff (dom :: DOM | eff) (Maybe Node)
+findAgain container indices = do
+  rows <- querySelectorAll container "tr"
+  theRow <- pure $ (rows !! indices.rowIndex)
+  cells <- maybe (pure []) (\r -> querySelectorAll r "td") theRow
+  pure $ (cells !! indices.colIndex)
+
+
 apiUpdate :: forall eff. Node -> Crossword -> (CrosswordSquare -> CrosswordSquare) -> Eff (dom :: DOM | eff) UpdateGameState
 apiUpdate node cword modifier = do
   rowIndex <- (readAttribute node "data-row-index")
@@ -52,7 +61,8 @@ apiUpdate node cword modifier = do
   let indices = readIndices rowIndex colIndex
   let updated = Data.Maybe.maybe cword (\i -> updateGrid cword i.rowIndex i.colIndex modifier) indices
   rendered <- apiRenderGrid updated
-  return { model: updated, node: rendered }
+  focused <- Data.Maybe.maybe (pure Nothing) (\i -> findAgain rendered i) indices
+  return { model: updated, node: rendered, focused: focused }
 
 
 noop :: CrosswordSquare -> CrosswordSquare

@@ -41,3 +41,11 @@ exports.getNodeName = function (node) {
     return node.nodeName;
   };
 };
+
+exports.querySelectorAll = function (node) {
+  return function (selector) {
+    return function () {
+      return node.querySelectorAll(selector);
+    };
+  };
+};

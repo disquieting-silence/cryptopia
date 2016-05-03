@@ -15,6 +15,7 @@ exports.doEverything = function (api) {
       container.innerHTML = '';
       gameState = newState.model;
       container.appendChild(newState.node);
+      if (newState.focused && newState.focused.value0) newState.focused.value0.focus();
     };
 
     var NUM_ROWS = 15;
