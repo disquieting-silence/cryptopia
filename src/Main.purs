@@ -74,10 +74,13 @@ extractKeyPress evt = do
   name <- getNodeName evt.target
   return { target: evt.target, modifier: noop }
 
-processKeyPress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
-processKeyPress evt cword = do
+processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
+processKeypress evt cword = do
   extracted <- extractKeyPress evt
   apiUpdate extracted.target cword extracted.modifier
+
+processKeydown :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) (Maybe Node)
+processKeydown _ _ = pure Nothing
 
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
 renderNode (CrosswordUi model) = createElementsFrom model
@@ -95,7 +98,7 @@ bridgeApi = {
   getNextPosition: getNextPosition,
   load: apiLoad,
   save: apiSave,
-  processKeypress: processKeyPress,
+  processKeypress: processKeypress,
   createGrid: apiCreateGrid,
   renderGrid: apiRenderGrid
 }
