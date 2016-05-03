@@ -92,22 +92,23 @@ processKeypress evt cword = do
   apiUpdate extracted.target cword extracted.modifier
 
 
--- getNextSquare :: Maybe { rowIndex :: Int, colIndex :: Int } ->
+getNextSquare :: forall eff. { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
+getNextSquare indices evt bounds = pure Nothing
 
--- processKeydown :: forall eff. Node -> Node -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
--- processKeydown parent cell evt = do
---   -- Remove duplication and abstraction breaking.
---
---   -- What I want to do here is get the bounds (somehow) and navigate the delta and
---   -- find that cell in the container, and return it
---
---   -- So let's assume I have the bounds.
---   bounds <- maybe { width : 1, height: 1 } id (getBounds model)
---   rowIndex <- (readAttribute node "data-row-index")
---   colIndex <- (readAttribute node "data-col-index")
---   let indices = readIndices rowIndex colIndex
---   let nextPosition = getNextPosition
---   let delta = Data.Maybe.maybe { x: 0, y: 0 }
+processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
+processKeydown container cword evt = do
+  -- Remove duplication and abstraction breaking.
+
+  -- What I want to do here is get the bounds (somehow) and navigate the delta and
+  -- find that cell in the container, and return it
+
+  -- So let's assume I have the bounds.
+  bounds <- pure $ maybe { width : 1, height: 1 } id (getBounds cword)
+  rowIndex <- (readAttribute evt.target "data-row-index")
+  colIndex <- (readAttribute evt.target "data-col-index")
+  let indices = readIndices rowIndex colIndex
+  Data.Maybe.maybe (pure Nothing) (\i -> getNextSquare i evt bounds) indices
+
 
 
 
@@ -124,7 +125,6 @@ apiRenderGrid cword =
 
 bridgeApi :: CryptopiaApi
 bridgeApi = {
-  getNextPosition: getNextPosition,
   load: apiLoad,
   save: apiSave,
   processKeypress: processKeypress,

@@ -14,7 +14,6 @@ type Bounds = { width :: Int, height :: Int }
 type UpdateGameState = { model :: Crossword, node :: Node, focused :: Maybe Node }
 
 type CryptopiaApi = {
-  getNextPosition :: Point -> KeyEvent -> Bounds -> Point,
   load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState),
   save :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit,
   processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState,
