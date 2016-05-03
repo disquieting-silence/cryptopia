@@ -15,6 +15,9 @@ import Core.Crossword
 import Core.Ui
 import Alien
 
+data Navigation = North | East | South | West
+
+
 loadFromRawFormat :: RawFormat -> CrosswordUi
 loadFromRawFormat input =
   let model = Core.Crossword.parse input
@@ -68,15 +71,24 @@ apiUpdate node cword modifier = do
 noop :: CrosswordSquare -> CrosswordSquare
 noop sq = Black
 
-extractKeyPress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
-extractKeyPress evt = do
+extractKeypress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
+extractKeypress evt = do
   let which = evt.which
   name <- getNodeName evt.target
   return { target: evt.target, modifier: noop }
 
+extractKeydown :: KeyEvent -> (Maybe Navigation)
+extractKeydown evt = do
+  case evt.which of
+    37 -> Just West
+    38 -> Just North
+    39 -> Just East
+    40 -> Just South
+    _ -> Nothing
+
 processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
 processKeypress evt cword = do
-  extracted <- extractKeyPress evt
+  extracted <- extractKeypress evt
   apiUpdate extracted.target cword extracted.modifier
 
 processKeydown :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) (Maybe Node)
