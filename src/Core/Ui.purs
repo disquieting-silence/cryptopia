@@ -54,7 +54,7 @@ renderEmpty numOpt = NodeModel {
   content: "",
   children: [
     (renderNumber numOpt),
-    (renderContent "\\uFEFF")
+    (renderContent " ")
   ]
 }
 

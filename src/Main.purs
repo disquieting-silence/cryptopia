@@ -5,6 +5,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Maybe
 import Data.Array
+import Data.Char
 import Data.Foldable
 import Math
 import Data.Int
@@ -71,20 +72,32 @@ apiUpdate node cword modifier = do
 noop :: CrosswordSquare -> CrosswordSquare
 noop sq = Black
 
+toBlack :: CrosswordSquare -> CrosswordSquare
+toBlack _ = Black
+
+toLetter :: Char -> CrosswordSquare -> CrosswordSquare
+toLetter ch Black = Full { content: show ch, num: Nothing }
+toLetter ch (Empty d) = Full { content: show ch, num: d.num }
+toLetter ch (Full d) = Full { content: show ch, num: d.num }
+
+toBlank :: CrosswordSquare -> CrosswordSquare
+toBlank Black = Empty { num: Nothing }
+toBlank sq@(Empty d) = sq
+toBlank (Full d) = Empty { num: d.num }
+
+modifySquare :: Int -> (CrosswordSquare -> CrosswordSquare)
+modifySquare 32 = toBlank
+modifySquare num =
+  let letter = (Data.Char.fromCharCode num)
+  in case letter of
+       '.' -> toBlack
+       _ ->   toLetter letter
+
+
 extractKeypress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
 extractKeypress evt = do
-  let which = evt.which
   name <- getNodeName evt.target
-  return { target: evt.target, modifier: noop }
-
-extractKeydown :: KeyEvent -> (Maybe Navigation)
-extractKeydown evt = do
-  case evt.which of
-    37 -> Just West
-    38 -> Just North
-    39 -> Just East
-    40 -> Just South
-    _ -> Nothing
+  pure { target: evt.target, modifier: modifySquare evt.which  }
 
 processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
 processKeypress evt cword = do
