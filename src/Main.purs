@@ -76,9 +76,9 @@ toBlack :: CrosswordSquare -> CrosswordSquare
 toBlack _ = Black
 
 toLetter :: Char -> CrosswordSquare -> CrosswordSquare
-toLetter ch Black = Full { content: show ch, num: Nothing }
-toLetter ch (Empty d) = Full { content: show ch, num: d.num }
-toLetter ch (Full d) = Full { content: show ch, num: d.num }
+toLetter ch Black = Full { content: Data.Char.toString ch, num: Nothing }
+toLetter ch (Empty d) = Full { content: Data.Char.toString ch, num: d.num }
+toLetter ch (Full d) = Full { content: Data.Char.toString ch, num: d.num }
 
 toBlank :: CrosswordSquare -> CrosswordSquare
 toBlank Black = Empty { num: Nothing }

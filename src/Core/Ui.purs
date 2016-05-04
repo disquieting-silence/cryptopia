@@ -21,7 +21,14 @@ renderVoid = NodeModel {
     focusable
   ],
   content : "",
-  children: [ ]
+  children: [
+    NodeModel {
+      tag: "span",
+      attributes: [ { key: "class", value: "square" } ],
+      content: "",
+      children: [ ]
+    }
+  ]
 }
 
 renderNumber :: Maybe Int -> NodeModel
@@ -67,7 +74,6 @@ renderFull c numOpt = NodeModel {
   ],
   content: "",
   children: [
-    NodeModel { tag: "span", attributes: [], content: "hi", children: [] },
     (renderNumber numOpt),
     renderContent c
   ]
