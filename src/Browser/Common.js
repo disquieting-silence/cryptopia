@@ -20,7 +20,6 @@ exports.createElement = function (tag) {
 exports.appendElement = function (parent) {
   return function (child) {
     return function () {
-      console.log('appending', child);
       parent.appendChild(child);
     };
   };

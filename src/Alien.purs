@@ -17,6 +17,7 @@ type CryptopiaApi = {
   load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState),
   save :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit,
   processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState,
+  processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node),
   createGrid :: Bounds -> Crossword,
   renderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 }

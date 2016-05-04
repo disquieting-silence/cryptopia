@@ -46,16 +46,9 @@ exports.doEverything = function (api) {
     });
 
     container.addEventListener('keydown', function (event) {
-      if (event.target !== null && event.target.nodeName.toLowerCase() === 'td') {
-        // current index in row
-        var column = Array.prototype.indexOf.call(event.target.parentNode.childNodes, event.target);
-        var row = Array.prototype.indexOf.call(event.target.parentNode.parentNode.childNodes, event.target.parentNode);
-
-        var nextPosition = api.getNextPosition({ x: column, y: row })(event)({ width: NUM_COLS, height: NUM_ROWS });
-        document.querySelector('.crossword').querySelectorAll('tr')[nextPosition.y].querySelectorAll('td')[nextPosition.x].focus();
-
-        console.log('event', row, column);
-      }
+      var newFocus = api.processKeydown(container)(gameState)(event)();
+      console.log('newFocus', newFocus, event.target);
+      if (newFocus.value0) newFocus.value0.focus();
     });
 
     document.querySelector('.save').addEventListener('click', function () {

@@ -92,8 +92,10 @@ processKeypress evt cword = do
   apiUpdate extracted.target cword extracted.modifier
 
 
-getNextSquare :: forall eff. { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
-getNextSquare indices evt bounds = pure Nothing
+getNextSquare :: forall eff. Node -> { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
+getNextSquare container indices evt bounds =
+  let nextPoint = getNextPosition { x: indices.colIndex, y: indices.rowIndex } evt bounds
+  in findAgain container { colIndex: nextPoint.x, rowIndex: nextPoint.y }
 
 processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
 processKeydown container cword evt = do
@@ -107,7 +109,7 @@ processKeydown container cword evt = do
   rowIndex <- (readAttribute evt.target "data-row-index")
   colIndex <- (readAttribute evt.target "data-col-index")
   let indices = readIndices rowIndex colIndex
-  Data.Maybe.maybe (pure Nothing) (\i -> getNextSquare i evt bounds) indices
+  Data.Maybe.maybe (pure Nothing) (\i -> getNextSquare container i evt bounds) indices
 
 
 
@@ -128,6 +130,7 @@ bridgeApi = {
   load: apiLoad,
   save: apiSave,
   processKeypress: processKeypress,
+  processKeydown: processKeydown,
   createGrid: apiCreateGrid,
   renderGrid: apiRenderGrid
 }
