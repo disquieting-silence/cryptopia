@@ -7,8 +7,6 @@ import Core.Navigation
 import Data.Maybe
 import Prelude
 import Control.Monad.Eff
--- Remove this.
-import Alien(KeyEvent)
 
 processDirection :: KeyEvent -> Maybe Direction
 processDirection evt =
@@ -30,4 +28,4 @@ processKeydown container cword evt = do
   let dir = processDirection evt
   cellIndex <- Ui.Ui.readIndicesFromCell evt.target
   newFocus <- pure $ processNavigation cword dir cellIndex
-  Data.Maybe.maybe (pure Nothing) (\i -> findAgain container i) newFocus
+  Data.Maybe.maybe (pure Nothing) (\i -> Ui.Common.findAgain container i) newFocus

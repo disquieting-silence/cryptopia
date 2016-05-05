@@ -4,6 +4,8 @@ import Data.Maybe
 import Data.Array
 import Prelude
 
+type Bounds = { width :: Int, height :: Int }
+
 data CrosswordSquare =
   Black |
   Empty { num :: Maybe Int } |

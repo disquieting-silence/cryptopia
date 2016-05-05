@@ -7,10 +7,6 @@ import Core.Crossword
 import Prelude
 import Data.Maybe
 
-type Point = { x :: Int, y :: Int }
-type KeyEvent = { which :: Int, target :: Node }
-type Bounds = { width :: Int, height :: Int }
-
 type UpdateGameState = { model :: Crossword, node :: Node, focused :: Maybe Node }
 
 type CryptopiaApi = {

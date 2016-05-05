@@ -10,6 +10,8 @@ foreign import data DOM :: !
 
 foreign import data Node :: *
 
+type KeyEvent = { which :: Int, target :: Node }
+
 type NodeTag = String
 type Attribute = { key :: String, value :: String }
 type HtmlContent = String
