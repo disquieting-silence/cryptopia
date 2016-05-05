@@ -12,7 +12,6 @@ data CrosswordUi = CrosswordUi NodeModel
 
 focusable :: Attribute
 focusable = { key: "tabindex", value: "-1" }
-
 renderVoid :: NodeModel
 renderVoid = NodeModel {
   tag: "td",
@@ -22,10 +21,11 @@ renderVoid = NodeModel {
   ],
   content : "",
   children: [
+   (renderNumber Nothing),
     NodeModel {
       tag: "span",
       attributes: [ { key: "class", value: "square" } ],
-      content: "",
+      content: "\x200b",
       children: [ ]
     }
   ]
@@ -37,7 +37,7 @@ renderNumber numOpt = NodeModel {
   attributes: [
     { key: "class", value: "num" }
   ],
-  content: maybe "" show numOpt,
+  content: maybe "\x200b" show numOpt,
   children: [ ]
 }
 
@@ -61,7 +61,7 @@ renderEmpty numOpt = NodeModel {
   content: "",
   children: [
     (renderNumber numOpt),
-    (renderContent " ")
+    (renderContent "\x200b")
   ]
 }
 
