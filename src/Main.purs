@@ -79,16 +79,8 @@ modifySquare num =
        '.' -> Core.Crossword.toBlack
        _ ->   Core.Crossword.toLetter letter
 
-
-extractKeypress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
-extractKeypress evt = do
-  name <- getNodeName evt.target
-  pure { target: evt.target, modifier: modifySquare evt.which  }
-
 processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
-processKeypress evt cword = do
-  extracted <- extractKeypress evt
-  apiUpdate extracted.target cword extracted.modifier
+processKeypress evt cword = apiUpdate evt.target cword (modifySquare evt.which)
 
 
 getNextSquare :: forall eff. Node -> { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
