@@ -15,6 +15,7 @@ import Browser.Storage
 import Core.Crossword
 import Core.Ui
 import Alien
+import Ui.Actions
 
 data Navigation = North | East | South | West
 
@@ -43,78 +44,18 @@ apiSave name cword = do
   let toSave = Core.Crossword.serialise cword
   putInStorage name toSave
 
-readIndices :: String -> String -> Maybe { colIndex:: Int, rowIndex:: Int }
-readIndices rowIndex colIndex = do
-  ri <- fromString rowIndex
-  ci <- fromString colIndex
-  return { colIndex: ci, rowIndex: ri }
-
-
-findAgain :: forall eff. Node -> { colIndex :: Int, rowIndex :: Int } -> Eff (dom :: DOM | eff) (Maybe Node)
-findAgain container indices = do
-  rows <- querySelectorAll container "tr"
-  theRow <- pure $ (rows !! indices.rowIndex)
-  cells <- maybe (pure []) (\r -> querySelectorAll r "td") theRow
-  pure $ (cells !! indices.colIndex)
-
 
 apiUpdate :: forall eff. Node -> Crossword -> (CrosswordSquare -> CrosswordSquare) -> Eff (dom :: DOM | eff) UpdateGameState
-apiUpdate node cword modifier = do
-  rowIndex <- (readAttribute node "data-row-index")
-  colIndex <- (readAttribute node "data-col-index")
-  let indices = readIndices rowIndex colIndex
-  let updated = Data.Maybe.maybe cword (\i -> updateGrid cword i.rowIndex i.colIndex modifier) indices
-  rendered <- apiRenderGrid updated
-  focused <- Data.Maybe.maybe (pure Nothing) (\i -> findAgain rendered i) indices
-  return { model: updated, node: rendered, focused: focused }
-
-
-
-
-modifySquare :: Int -> (CrosswordSquare -> CrosswordSquare)
-modifySquare 32 = Core.Crossword.toBlank
-modifySquare num =
-  let letter = (Data.Char.fromCharCode num)
-  in case letter of
-       '.' -> Core.Crossword.toBlack
-       _ ->   Core.Crossword.toLetter letter
+apiUpdate = Ui.Actions.apiUpdate
 
 processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
-processKeypress evt cword = apiUpdate evt.target cword (modifySquare evt.which)
-
-
-getNextSquare :: forall eff. Node -> { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
-getNextSquare container indices evt bounds =
-  let nextPoint = getNextPosition { x: indices.colIndex, y: indices.rowIndex } evt bounds
-  in findAgain container { colIndex: nextPoint.x, rowIndex: nextPoint.y }
-
-processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
-processKeydown container cword evt = do
-  -- Remove duplication and abstraction breaking.
-
-  -- What I want to do here is get the bounds (somehow) and navigate the delta and
-  -- find that cell in the container, and return it
-
-  -- So let's assume I have the bounds.
-  bounds <- pure $ maybe { width : 1, height: 1 } id (getBounds cword)
-  rowIndex <- (readAttribute evt.target "data-row-index")
-  colIndex <- (readAttribute evt.target "data-col-index")
-  let indices = readIndices rowIndex colIndex
-  Data.Maybe.maybe (pure Nothing) (\i -> getNextSquare container i evt bounds) indices
-
-
-
-
-renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
-renderNode (CrosswordUi model) = createElementsFrom model
+processKeypress = Ui.Actions.processKeypress
 
 apiCreateGrid :: Bounds -> Crossword
-apiCreateGrid bounds = Core.Crossword.createGrid bounds.width bounds.height
+apiCreateGrid= Ui.Actions.apiCreateGrid
 
 apiRenderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
-apiRenderGrid cword =
-  let ui = Core.Ui.renderCrossword cword
-  in renderNode ui
+apiRenderGrid cword = Ui.Actions.apiRenderGrid cword
 
 bridgeApi :: CryptopiaApi
 bridgeApi = {
@@ -131,19 +72,3 @@ main = do
   doEverything (bridgeApi)
   putInStorage "dog" [[ "a" ]]
   log "HI"
-
-getDelta :: KeyEvent -> Maybe Point
-getDelta evt =
-  case evt.which of
-    37 -> Just { x: -1, y : 0 }
-    38 -> Just { x: 0, y: -1 }
-    39 -> Just { x: 1, y: 0 }
-    40 -> Just { x: 0, y: 1 }
-    _ -> Nothing
-
-getNextPosition :: Point -> KeyEvent -> Bounds -> Point
-getNextPosition pt evt bounds =
-  let delta = maybe { x: 0, y: 0 } id (getDelta evt)
-      nextX = ((pt.x + delta.x) + bounds.width) `mod` bounds.width
-      nextY = ((pt.y + delta.y) + bounds.height) `mod` bounds.height
-  in { x: nextX, y: nextY }

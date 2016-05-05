@@ -80,3 +80,7 @@ getNextPosition pt evt bounds =
       nextX = ((pt.x + delta.x) + bounds.width) `mod` bounds.width
       nextY = ((pt.y + delta.y) + bounds.height) `mod` bounds.height
   in { x: nextX, y: nextY }
+
+
+apiCreateGrid :: Bounds -> Crossword
+apiCreateGrid bounds = Core.Crossword.createGrid bounds.width bounds.height
