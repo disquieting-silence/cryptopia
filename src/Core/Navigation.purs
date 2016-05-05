@@ -26,3 +26,10 @@ navigate cword dir coord =
       nextCol = ((coord.colIndex + delta.colIndex) + bounds.width) `mod` bounds.width
       nextRow = ((coord.rowIndex + delta.rowIndex) + bounds.height) `mod` bounds.height
   in { colIndex: nextCol, rowIndex: nextRow }
+
+
+processNavigation :: Crossword -> Maybe Direction -> Maybe CellIndex -> Maybe CellIndex
+processNavigation cword dir cellIndex = do
+  d <- dir
+  i <- cellIndex
+  pure $ navigate cword d i

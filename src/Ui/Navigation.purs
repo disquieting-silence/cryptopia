@@ -17,15 +17,9 @@ processDirection evt =
     40 -> Just South
     _ -> Nothing
 
-processNavigation :: Crossword -> Maybe Direction -> Maybe CellIndex -> Maybe CellIndex
-processNavigation cword dir cellIndex = do
-  d <- dir
-  i <- cellIndex
-  pure $ Core.Navigation.navigate cword d i
-
 processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
 processKeydown container cword evt = do
   let dir = processDirection evt
   cellIndex <- Ui.Ui.readIndicesFromCell evt.target
-  newFocus <- pure $ processNavigation cword dir cellIndex
+  newFocus <- pure $ Core.Navigation.processNavigation cword dir cellIndex
   Data.Maybe.maybe (pure Nothing) (\i -> Ui.Common.findAgain container i) newFocus
