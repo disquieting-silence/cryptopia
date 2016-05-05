@@ -10,7 +10,6 @@ exports.createElement = function (tag) {
         for (var i in attributes) {
           node.setAttribute(attributes[i].key, attributes[i].value);
         }
-        console.log('content [' + content + ']');
         node.innerHTML = content;
         return node;
       };
