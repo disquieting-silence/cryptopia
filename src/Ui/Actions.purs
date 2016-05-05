@@ -2,6 +2,7 @@ module Ui.Actions where
 
 import Browser.Common
 import Core.Crossword
+import Core.Navigation
 import Ui.Ui
 import Alien
 import Control.Monad.Eff
@@ -9,22 +10,27 @@ import Data.Maybe
 import Data.Array
 import Prelude(bind, pure, ($), id, negate, mod, (+))
 
+processDirection :: KeyEvent -> Maybe Direction
+processDirection evt =
+  case evt.which of
+    37 -> Just East
+    38 -> Just North
+    39 -> Just West
+    40 -> Just South
+    _ -> Nothing
+
+processNavigation :: Crossword -> Maybe Direction -> Maybe CellIndex -> Maybe CellIndex
+processNavigation cword dir cellIndex = do
+  d <- dir
+  i <- cellIndex
+  pure $ Core.Navigation.navigate cword d i
+
 processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
 processKeydown container cword evt = do
-  -- Remove duplication and abstraction breaking.
-
-  -- What I want to do here is get the bounds (somehow) and navigate the delta and
-  -- find that cell in the container, and return it
-
-  -- So let's assume I have the bounds.
-  bounds <- pure $ maybe { width : 1, height: 1 } id (getBounds cword)
-  indices <- Ui.Ui.readIndicesFromCell evt.target
-  Data.Maybe.maybe (pure Nothing) (\i -> getNextSquare container i evt bounds) indices
-
-getNextSquare :: forall eff. Node -> { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
-getNextSquare container indices evt bounds =
-  let nextPoint = getNextPosition { x: indices.colIndex, y: indices.rowIndex } evt bounds
-  in findAgain container { colIndex: nextPoint.x, rowIndex: nextPoint.y }
+  let dir = processDirection evt
+  cellIndex <- Ui.Ui.readIndicesFromCell evt.target
+  newFocus <- pure $ processNavigation cword dir cellIndex
+  Data.Maybe.maybe (pure Nothing) (\i -> findAgain container i) newFocus
 
 
 modifySquare :: Int -> (CrosswordSquare -> CrosswordSquare)
