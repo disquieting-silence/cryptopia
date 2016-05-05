@@ -1,4 +1,4 @@
-module Store.Store where
+module Store.LocalStore where
 
 import Browser.Storage(RawFormat, BrowserStorage, getFromStorage, putInStorage)
 import Core.Crossword(parse, serialise, Crossword)

@@ -32,7 +32,7 @@ apiFailedLoad name = do
   return Nothing
 
 apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
-apiLoad name = do
+apiLoad name = do 
   input <- getFromStorage name
   maybe (apiFailedLoad name) apiLoadFrom input.detail
 
