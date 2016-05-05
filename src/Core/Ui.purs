@@ -4,10 +4,11 @@ import Core.Crossword
 import Browser.Common
 import Data.Array
 import Data.Maybe
-import Prelude (void, map, show)
+import Prelude (void, map, show, bind, pure, ($))
+import Data.Int
+import Control.Monad.Eff
 
 data CrosswordUi = CrosswordUi NodeModel
-
 
 
 focusable :: Attribute
@@ -117,3 +118,15 @@ renderCrossword (Crossword rowsData) =
       tbody = NodeModel { tag: "tbody", attributes: [ ], content: "", children: rows }
       table = NodeModel { tag: "table", attributes: [ ], content: "", children: [ tbody ] }
   in CrosswordUi table
+
+readIndices :: String -> String -> Maybe { colIndex:: Int, rowIndex:: Int }
+readIndices rowIndex colIndex = do
+  ri <- fromString rowIndex
+  ci <- fromString colIndex
+  pure { colIndex: ci, rowIndex: ri }
+
+readIndicesFromCell :: forall eff. Node -> Eff (dom :: DOM | eff) (Maybe { colIndex :: Int, rowIndex :: Int })
+readIndicesFromCell node = do
+  rowIndex <- (readAttribute node "data-row-index")
+  colIndex <- (readAttribute node "data-col-index")
+  pure $ readIndices rowIndex colIndex
