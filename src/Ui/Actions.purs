@@ -2,7 +2,7 @@ module Ui.Actions where
 
 import Browser.Common
 import Core.Crossword
-import Core.Ui
+import Ui.Ui
 import Alien
 import Control.Monad.Eff
 import Data.Maybe
@@ -18,7 +18,7 @@ processKeydown container cword evt = do
 
   -- So let's assume I have the bounds.
   bounds <- pure $ maybe { width : 1, height: 1 } id (getBounds cword)
-  indices <- Core.Ui.readIndicesFromCell evt.target
+  indices <- Ui.Ui.readIndicesFromCell evt.target
   Data.Maybe.maybe (pure Nothing) (\i -> getNextSquare container i evt bounds) indices
 
 getNextSquare :: forall eff. Node -> { rowIndex :: Int, colIndex :: Int } -> KeyEvent -> Bounds -> Eff (dom :: DOM | eff) (Maybe Node)
@@ -58,7 +58,7 @@ findAgain container indices = do
 
 apiRenderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 apiRenderGrid cword =
-  let ui = Core.Ui.renderCrossword cword
+  let ui = Ui.Ui.renderCrossword cword
   in renderNode ui
 
 

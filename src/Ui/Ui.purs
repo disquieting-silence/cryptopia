@@ -1,4 +1,4 @@
-module Core.Ui where
+module Ui.Ui where
 
 import Core.Crossword
 import Browser.Common

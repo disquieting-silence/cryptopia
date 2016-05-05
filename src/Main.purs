@@ -13,17 +13,14 @@ import Data.Int
 import Browser.Common
 import Browser.Storage
 import Core.Crossword
-import Core.Ui
 import Alien
 import Ui.Actions
-
-data Navigation = North | East | South | West
-
+import Ui.Ui
 
 loadFromRawFormat :: RawFormat -> CrosswordUi
 loadFromRawFormat input =
   let model = Core.Crossword.parse input
-  in Core.Ui.renderCrossword model
+  in Ui.Ui.renderCrossword model
 
 apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiLoadFrom raw =
