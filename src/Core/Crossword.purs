@@ -54,3 +54,19 @@ getBounds (Crossword model) = do
   numRows <- pure (length model)
   numColumns <- length <$> (model !! 0)
   return { width: numColumns, height: numRows }
+
+noop :: CrosswordSquare -> CrosswordSquare
+noop sq = Black
+
+toBlack :: CrosswordSquare -> CrosswordSquare
+toBlack _ = Black
+
+toLetter :: Char -> CrosswordSquare -> CrosswordSquare
+toLetter ch Black = Full { content: Data.Char.toString ch, num: Nothing }
+toLetter ch (Empty d) = Full { content: Data.Char.toString ch, num: d.num }
+toLetter ch (Full d) = Full { content: Data.Char.toString ch, num: d.num }
+
+toBlank :: CrosswordSquare -> CrosswordSquare
+toBlank Black = Empty { num: Nothing }
+toBlank sq@(Empty d) = sq
+toBlank (Full d) = Empty { num: d.num }

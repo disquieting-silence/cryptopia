@@ -69,29 +69,15 @@ apiUpdate node cword modifier = do
   return { model: updated, node: rendered, focused: focused }
 
 
-noop :: CrosswordSquare -> CrosswordSquare
-noop sq = Black
 
-toBlack :: CrosswordSquare -> CrosswordSquare
-toBlack _ = Black
-
-toLetter :: Char -> CrosswordSquare -> CrosswordSquare
-toLetter ch Black = Full { content: Data.Char.toString ch, num: Nothing }
-toLetter ch (Empty d) = Full { content: Data.Char.toString ch, num: d.num }
-toLetter ch (Full d) = Full { content: Data.Char.toString ch, num: d.num }
-
-toBlank :: CrosswordSquare -> CrosswordSquare
-toBlank Black = Empty { num: Nothing }
-toBlank sq@(Empty d) = sq
-toBlank (Full d) = Empty { num: d.num }
 
 modifySquare :: Int -> (CrosswordSquare -> CrosswordSquare)
-modifySquare 32 = toBlank
+modifySquare 32 = Core.Crossword.toBlank
 modifySquare num =
   let letter = (Data.Char.fromCharCode num)
   in case letter of
-       '.' -> toBlack
-       _ ->   toLetter letter
+       '.' -> Core.Crossword.toBlack
+       _ ->   Core.Crossword.toLetter letter
 
 
 extractKeypress :: forall eff. KeyEvent -> Eff (dom :: DOM | eff) { target :: Node, modifier :: CrosswordSquare -> CrosswordSquare }
