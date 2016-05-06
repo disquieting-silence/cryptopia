@@ -5,6 +5,7 @@ import Data.Array
 import Prelude
 
 type Bounds = { width :: Int, height :: Int }
+type CellIndex = { rowIndex :: Int, colIndex :: Int }
 
 data CrosswordSquare =
   Black |

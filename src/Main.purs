@@ -25,8 +25,8 @@ apiFailedLoad name = do
 
 apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
 apiLoad name = do
-  model <- Store.LocalStore.apiLoad name
-  maybe (apiFailedLoad name) (\cword -> Just <$> Ui.UiState.recreate cword) model
+  mcword <- Store.LocalStore.apiLoad name
+  maybe (apiFailedLoad name) (\cword -> Just <$> Ui.UiState.recreate cword) mcword
 
 apiSave :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit
 apiSave name cword = do
@@ -41,7 +41,7 @@ processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) U
 processKeypress = Ui.Actions.processKeypress
 
 apiCreateGrid :: Bounds -> Crossword
-apiCreateGrid= Ui.Actions.apiCreateGrid
+apiCreateGrid = Ui.Actions.apiCreateGrid
 
 apiRenderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 apiRenderGrid cword = Ui.Actions.apiRenderGrid cword
@@ -51,7 +51,7 @@ bridgeApi = {
   load: apiLoad,
   save: apiSave,
   processKeypress: processKeypress,
-  processKeydown: processKeydown,
+  processKeydown: Ui.Navigation.processKeydown,
   createGrid: apiCreateGrid,
   renderGrid: apiRenderGrid
 }
