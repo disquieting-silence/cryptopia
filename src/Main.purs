@@ -19,11 +19,6 @@ import Ui.Actions
 import Ui.Ui
 import Ui.UiState
 
-apiLoadFrom :: forall eff. Crossword -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
-apiLoadFrom model = do
-  ui <- pure $ Ui.Ui.renderCrossword model
-  (\node -> Just { model: model, node: node, focused: Nothing }) <$> (renderNode ui)
-
 apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiFailedLoad name = do
   return Nothing
@@ -31,7 +26,7 @@ apiFailedLoad name = do
 apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
 apiLoad name = do
   model <- Store.LocalStore.apiLoad name
-  maybe (apiFailedLoad name) apiLoadFrom model
+  maybe (apiFailedLoad name) (\cword -> Just <$> Ui.UiState.recreate cword) model
 
 apiSave :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit
 apiSave name cword = do
