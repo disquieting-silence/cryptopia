@@ -28,14 +28,8 @@ processKeypress evt cword = apiUpdate evt.target cword (modifySquare evt.which)
 
 apiUpdate :: forall eff. Node -> Crossword -> (CrosswordSquare -> CrosswordSquare) -> Eff (dom :: DOM | eff) UpdateGameState
 apiUpdate node cword modifier = do
-  rowIndex <- (readAttribute node "data-row-index")
-  colIndex <- (readAttribute node "data-col-index")
-  let indices = readIndices rowIndex colIndex
-  let updated = Data.Maybe.maybe cword (\i -> updateGrid cword i.rowIndex i.colIndex modifier) indices
-  rendered <- apiRenderGrid updated
-  focused <- Data.Maybe.maybe (pure Nothing) (\i -> findAgain rendered i) indices
-  pure { model: updated, node: rendered, focused: focused }
-
+  let modification = (\i c -> updateGrid c i.rowIndex i.colIndex modifier)
+  Ui.UiState.modify node cword modification
 
 apiRenderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
 apiRenderGrid cword =
