@@ -13,28 +13,24 @@ import Data.Int
 import Browser.Common
 import Browser.Storage
 import Core.Crossword
+import Store.LocalStore
 import Alien
 import Ui.Actions
 import Ui.Ui
 
-loadFromRawFormat :: RawFormat -> CrosswordUi
-loadFromRawFormat input =
-  let model = Core.Crossword.parse input
-  in Ui.Ui.renderCrossword model
-
-apiLoadFrom :: forall eff. RawFormat -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
-apiLoadFrom raw =
-  let info = loadFromRawFormat raw
-  in (\i -> Just { model: Core.Crossword.parse raw, node: i, focused: Nothing}) <$> (renderNode info)
+apiLoadFrom :: forall eff. Crossword -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
+apiLoadFrom model = do
+  ui <- pure $ Ui.Ui.renderCrossword model
+  (\node -> Just { model: model, node: node, focused: Nothing }) <$> (renderNode ui)
 
 apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiFailedLoad name = do
   return Nothing
 
 apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
-apiLoad name = do 
-  input <- getFromStorage name
-  maybe (apiFailedLoad name) apiLoadFrom input.detail
+apiLoad name = do
+  model <- Store.LocalStore.apiLoad name
+  maybe (apiFailedLoad name) apiLoadFrom model
 
 apiSave :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit
 apiSave name cword = do
