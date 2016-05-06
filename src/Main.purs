@@ -17,6 +17,7 @@ import Store.LocalStore
 import Alien
 import Ui.Actions
 import Ui.Ui
+import Ui.UiState
 
 apiLoadFrom :: forall eff. Crossword -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
 apiLoadFrom model = do

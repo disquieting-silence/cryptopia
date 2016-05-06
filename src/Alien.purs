@@ -6,8 +6,7 @@ import Control.Monad.Eff (Eff)
 import Core.Crossword
 import Prelude
 import Data.Maybe
-
-type UpdateGameState = { model :: Crossword, node :: Node, focused :: Maybe Node }
+import Ui.UiState
 
 type CryptopiaApi = {
   load :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState),

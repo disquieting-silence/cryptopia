@@ -4,13 +4,13 @@ import Browser.Common
 import Core.Crossword
 import Core.Navigation
 import Ui.Ui
-import Alien
 import Control.Monad.Eff
 import Data.Maybe
 import Data.Array
 import Prelude(bind, pure, ($), id, negate, mod, (+))
 import Ui.Common
 import Ui.Navigation
+import Ui.UiState
 
 processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
 processKeydown container cword evt = Ui.Navigation.processKeydown container cword evt
@@ -42,9 +42,6 @@ apiRenderGrid cword =
   let ui = Ui.Ui.renderCrossword cword
   in renderNode ui
 
-
-renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
-renderNode (CrosswordUi model) = createElementsFrom model
 
 apiCreateGrid :: Bounds -> Crossword
 apiCreateGrid bounds = Core.Crossword.createGrid bounds.width bounds.height
