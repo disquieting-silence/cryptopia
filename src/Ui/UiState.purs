@@ -1,4 +1,4 @@
-module Ui.UiState where
+module Ui.UiState (recreate, create, modify, UpdateGameState) where
 
 import Core.Crossword
 import Browser.Common
@@ -16,6 +16,12 @@ recreate cword = do
   let ui = Ui.Ui.renderCrossword cword
   node <- renderNode ui
   pure { model: cword, node: node, focused: Nothing }
+
+
+create :: forall eff. Bounds -> Eff (dom :: DOM | eff) UpdateGameState
+create bounds =
+  let cword = Core.Crossword.createGrid bounds.width bounds.height
+  in recreate cword
 
 renderNode :: forall eff. CrosswordUi -> Eff (dom :: DOM | eff) Node
 renderNode (CrosswordUi model) = createElementsFrom model

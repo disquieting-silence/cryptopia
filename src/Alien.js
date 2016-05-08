@@ -33,9 +33,8 @@ exports.doEverything = function (api) {
     restore.classList.add('restore');
     document.body.appendChild(restore);
 
-    var gameState = api.createGrid({ width: 5, height: 5 });
-    var table = api.renderGrid(gameState)();
-    container.appendChild(table);
+    var gameState = { };
+    refresh(api.createGrid({ width: 5, height: 5 })());
 
     container.addEventListener('keypress', function (event) {
       var ch = event.which;

@@ -4,60 +4,22 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Maybe
-import Data.Array
-import Data.Char
-import Data.Foldable
-import Math
-import Data.Int
-
-import Browser.Common
-import Browser.Storage
-import Core.Crossword
-import Store.LocalStore
 import Alien
 import Ui.Actions
-import Ui.Ui
-import Ui.UiState
+import Browser.Common
+import Browser.Storage
 
-apiFailedLoad :: forall eff. String -> Eff (dom :: DOM | eff) (Maybe UpdateGameState)
-apiFailedLoad name = do
-  return Nothing
-
-apiLoad :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
-apiLoad name = do
-  mcword <- Store.LocalStore.apiLoad name
-  maybe (apiFailedLoad name) (\cword -> Just <$> Ui.UiState.recreate cword) mcword
-
-apiSave :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit
-apiSave name cword = do
-  let toSave = Core.Crossword.serialise cword
-  putInStorage name toSave
-
-
-apiUpdate :: forall eff. Node -> Crossword -> (CrosswordSquare -> CrosswordSquare) -> Eff (dom :: DOM | eff) UpdateGameState
-apiUpdate = Ui.Actions.apiUpdate
-
-processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
-processKeypress = Ui.Actions.processKeypress
-
-apiCreateGrid :: Bounds -> Crossword
-apiCreateGrid = Ui.Actions.apiCreateGrid
-
-apiRenderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
-apiRenderGrid cword = Ui.Actions.apiRenderGrid cword
-
-bridgeApi :: CryptopiaApi
-bridgeApi = {
-  load: apiLoad,
-  save: apiSave,
-  processKeypress: processKeypress,
-  processKeydown: Ui.Navigation.processKeydown,
-  createGrid: apiCreateGrid,
-  renderGrid: apiRenderGrid
+ffApi :: CryptopiaApi
+ffApi = {
+  load: Ui.Actions.loadGrid,
+  save: Ui.Actions.saveGrid,
+  processKeypress: Ui.Actions.processKeypress,
+  processKeydown: Ui.Actions.processKeydown,
+  createGrid: Ui.Actions.createGrid
 }
 
 main :: forall e. Eff (console :: CONSOLE, dom :: DOM, browser :: BrowserStorage | e) Unit
 main = do
-  doEverything (bridgeApi)
+  doEverything (ffApi)
   putInStorage "dog" [[ "a" ]]
   log "HI"

@@ -13,8 +13,7 @@ type CryptopiaApi = {
   save :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit,
   processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState,
   processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node),
-  createGrid :: Bounds -> Crossword,
-  renderGrid :: forall eff. Crossword -> Eff (dom :: DOM | eff) Node
+  createGrid :: forall eff. Bounds -> Eff (dom :: DOM | eff) UpdateGameState
 }
 
 foreign import doEverything :: forall eff. CryptopiaApi -> Eff (dom :: DOM | eff) Unit
