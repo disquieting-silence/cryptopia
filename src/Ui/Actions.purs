@@ -4,6 +4,7 @@ import Browser.Common
 import Browser.Storage
 import Core.Crossword
 import Core.Navigation
+import Core.Storage
 import Ui.Ui
 import Control.Monad.Eff
 import Data.Maybe
@@ -44,10 +45,11 @@ createGrid bounds = Ui.UiState.create bounds
 
 loadGrid :: forall eff. String -> Eff (dom :: DOM, browser :: BrowserStorage | eff) (Maybe UpdateGameState)
 loadGrid name = do
-  mcword <- Store.LocalStore.apiLoad name
+  mcword <- Core.Storage.apiLoad name
   maybe (pure Nothing) (\cword -> Just <$> Ui.UiState.recreate cword) mcword
 
 saveGrid :: forall eff. String -> Crossword -> Eff (browser :: BrowserStorage | eff) Unit
 saveGrid name cword = do
   let toSave = Core.Crossword.serialise cword
-  putInStorage name toSave
+  -- Probably change to going through core (even if it just delegates)
+  Browser.Storage.putInStorage name toSave

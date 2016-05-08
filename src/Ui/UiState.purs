@@ -42,6 +42,7 @@ modify node cword modification = do
   focused <- Data.Maybe.maybe (pure Nothing) (\i -> findAgain recreated.node i) indices
   pure { model: recreated.model, node: recreated.node, focused: focused }
 
+-- TODO: Make this return a GameState (which probably means it should take a GameState as an input)
 shiftFocus :: forall eff. Node -> Node -> Crossword -> (Maybe Direction) -> Eff (dom :: DOM | eff) (Maybe Node)
 shiftFocus container node cword dir = do
   indices <- Ui.Ui.readIndicesFromCell node

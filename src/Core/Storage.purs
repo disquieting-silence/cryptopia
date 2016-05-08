@@ -1,5 +1,7 @@
-module Store.LocalStore where
+module Core.Storage where
 
+-- This isn't quite like the other things in core ... but I'm not sure where
+-- it should go.
 import Browser.Storage(RawFormat, BrowserStorage, getFromStorage, putInStorage)
 import Core.Crossword(parse, serialise, Crossword)
 import Control.Monad.Eff
