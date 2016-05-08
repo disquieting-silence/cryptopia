@@ -9,7 +9,6 @@ import Control.Monad.Eff
 import Data.Maybe
 import Data.Array
 import Prelude(bind, pure, ($), id, negate, mod, (+), Unit, (<$>))
-import Ui.Common
 import Ui.UiState
 
 modifySquare :: Int -> (CrosswordSquare -> CrosswordSquare)

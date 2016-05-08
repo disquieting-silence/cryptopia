@@ -4,7 +4,6 @@ import Core.Navigation
 import Browser.Common
 import Core.Crossword
 import Ui.Ui
-import Ui.Common
 
 import Control.Monad.Eff
 import Data.Maybe
