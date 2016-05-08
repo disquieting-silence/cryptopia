@@ -10,7 +10,6 @@ import Data.Maybe
 import Data.Array
 import Prelude(bind, pure, ($), id, negate, mod, (+), Unit, (<$>))
 import Ui.Common
-import Ui.Navigation
 import Ui.UiState
 
 modifySquare :: Int -> (CrosswordSquare -> CrosswordSquare)
@@ -21,6 +20,15 @@ modifySquare num =
        '.' -> Core.Crossword.toBlack
        _ ->   Core.Crossword.toLetter letter
 
+processDirection :: KeyEvent -> Maybe Direction
+processDirection evt =
+ case evt.which of
+   37 -> Just West
+   38 -> Just North
+   39 -> Just East
+   40 -> Just South
+   _ -> Nothing
+
 processKeypress :: forall eff. KeyEvent -> Crossword -> Eff (dom :: DOM | eff) UpdateGameState
 processKeypress evt cword = do
   let modifier = modifySquare (evt.which)
@@ -28,7 +36,9 @@ processKeypress evt cword = do
   Ui.UiState.modify evt.target cword modification
 
 processKeydown :: forall eff. Node -> Crossword -> KeyEvent -> Eff (dom :: DOM | eff) (Maybe Node)
-processKeydown container cword evt = Ui.Navigation.processKeydown container cword evt
+processKeydown container cword evt =
+  let dir = processDirection evt
+  in Ui.UiState.shiftFocus container evt.target cword dir
 
 createGrid :: forall eff. Bounds -> Eff (dom :: DOM | eff) UpdateGameState
 createGrid bounds = Ui.UiState.create bounds

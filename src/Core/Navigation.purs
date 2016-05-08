@@ -6,8 +6,6 @@ import Data.Maybe
 
 data Direction = North | East | South | West
 
-type CellIndex = { rowIndex :: Int, colIndex :: Int }
-
 getDelta :: Direction -> CellIndex
 getDelta dir =
   case dir of
